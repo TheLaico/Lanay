@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500;1,600&family=Great+Vibes&display=swap" rel="stylesheet">
+<title>Lanay 🌻 Um cantinho para você</title>
+<style>
+  :root{
+    --sun:#f6b800; --sun-d:#e0a000;
+    --gold:#a86f00; --ink:#4a3413; --card:rgba(255,249,228,.72); --line:rgba(168,111,0,.3);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; color:var(--ink);
+    background:#f6d98a;
+    overflow-x:clip; min-height:100vh;
+  }
+  body::before{content:'';position:fixed;inset:0;z-index:-1;
+    background:linear-gradient(rgba(255,248,230,.18),rgba(255,248,230,.05)),url(assets/fondo2.jpeg) center/cover no-repeat}
+  @media (max-width:768px),(orientation:portrait){
+    body::before{background:linear-gradient(rgba(255,248,230,.18),rgba(255,248,230,.05)),url(assets/fondo1.jpeg) center/cover no-repeat}
+  }
+  .scene{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+    padding:24px;text-align:center;overflow-y:auto}
+  .scene.active{display:flex;animation:fade 1s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .es{display:block;font-family:'Cormorant Garamond',Georgia,serif;font-size:.78em;opacity:.8;font-style:italic;font-weight:500;margin-top:.25em}
+  h1,h2{font-family:'Great Vibes','Brush Script MT',cursive;font-weight:normal;color:#3a1c00;line-height:1.15;
+    text-shadow:0 0 14px rgba(255,248,225,.95),0 0 4px rgba(255,248,225,.8);font-size:clamp(2.3rem,9vw,3.4rem);margin:14px 0}
+  h1 .es,h2 .es{font-size:.4em;color:#4a2a08;letter-spacing:.06em;opacity:.9}
+  .name{font-size:clamp(2.4rem,9vw,3.6rem);letter-spacing:.35em;text-indent:.35em;margin-top:14px;text-transform:uppercase;
+    background:linear-gradient(180deg,#4a2500,#1f0d00);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 1px 8px rgba(255,248,225,.9))}
+  .intro{margin:6px 0 4px;display:flex;flex-direction:column;align-items:center;gap:0;padding:14px 34px;
+    background:radial-gradient(ellipse closest-side at center,rgba(255,248,225,.75) 0%,rgba(255,248,225,.5) 60%,rgba(255,248,225,0) 100%)}
+  .intro-small{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:clamp(1.15rem,4.5vw,1.4rem);letter-spacing:.12em;color:#2b1400;font-weight:500;text-shadow:0 0 12px rgba(255,248,225,.95)}
+  .intro-script{font-family:'Great Vibes','Brush Script MT',cursive;font-size:clamp(2.6rem,11vw,3.8rem);line-height:1.1;
+    background:linear-gradient(180deg,#a3223a,#5e0f22);-webkit-background-clip:text;background-clip:text;color:transparent;padding:0 .1em;filter:drop-shadow(0 1px 8px rgba(255,248,225,.9))}
+  .btn{
+    margin-top:22px;padding:12px 30px;font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:1.3rem;letter-spacing:.04em;color:#1a1400;cursor:pointer;
+    background:linear-gradient(180deg,#ffd75a,var(--sun-d));border:none;border-radius:40px;
+    box-shadow:0 6px 22px rgba(246,184,0,.25);transition:transform .2s,box-shadow .2s;
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .btn:active{transform:scale(.96)}
+  #open{background:linear-gradient(180deg,#4a2500,#241000);color:#ffd75a;border:1px solid #ffd75a;box-shadow:0 6px 20px rgba(36,16,0,.45)}
+  .btn.ghost{background:transparent;color:var(--sun-d);border:2px solid var(--sun);box-shadow:none}
+
+  /* flor inicial */
+  .big-flower{width:130px;height:208px;animation:sway 4s ease-in-out infinite;transform-origin:50% 100%}
+  .bouquet{width:min(300px,78vw);aspect-ratio:300/345;animation:sway 6s ease-in-out infinite;transform-origin:50% 100%;filter:drop-shadow(0 10px 30px rgba(246,184,0,.12))}
+  .bouquet svg{width:100%;height:100%;display:block;overflow:visible}
+  .big-flower svg,.fl svg{width:100%;height:100%;display:block;overflow:visible}
+  @keyframes sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+
+  /* jardim */
+  #garden{width:100%;max-width:560px;min-height:180px;display:flex;flex-wrap:wrap;align-items:flex-end;
+    justify-content:center;gap:2px;margin:10px 0;cursor:pointer;user-select:none}
+  .fl{width:64px;height:102px;transform-origin:50% 100%;animation:pop .7s cubic-bezier(.3,1.6,.5,1) both}
+  .fl.grown{animation:pop .7s cubic-bezier(.3,1.6,.5,1) both, sway 4s ease-in-out infinite;animation-delay:0s,var(--d,0s)}
+  @keyframes pop{from{transform:scale(0) translateY(30px);opacity:0}to{transform:scale(1);opacity:1}}
+  #gardenMsg{min-height:3.2em;font-family:'Great Vibes','Brush Script MT',cursive;font-size:clamp(1.9rem,7vw,2.6rem);line-height:1.15;color:#5e0f22;
+    text-shadow:0 0 12px rgba(255,248,225,.95);transition:opacity .8s}
+  #gardenMsg .es{font-size:.42em;color:#3a1c00}
+  #hint{font-family:'Great Vibes','Brush Script MT',cursive;font-size:clamp(2rem,8vw,2.8rem);line-height:1.15;color:#3a1c00;font-weight:normal;margin-top:8px;transition:opacity .6s;text-shadow:0 0 14px rgba(255,248,225,.95),0 0 4px rgba(255,248,225,.8)}
+  #hint .es{font-family:'Cormorant Garamond',Georgia,serif;font-size:.5em;font-style:italic;font-weight:500;letter-spacing:.08em;opacity:.9;margin-top:.2em}
+
+  /* contador */
+  .card{padding:18px 18px 20px;background:var(--card);border:1px solid var(--line);border-radius:20px;
+    box-shadow:0 4px 24px rgba(120,70,0,.2);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  .card .ttl{display:block;margin-bottom:8px;font-family:'Great Vibes','Brush Script MT',cursive;font-size:1.6rem;line-height:1.1;color:#3a1c00}
+  .card .ttl .es{font-size:.5em}
+  .units{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .unit b{display:block;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:2rem;line-height:1.1;color:#8f5600;font-variant-numeric:tabular-nums}
+  .unit span{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;opacity:.75}
+
+  /* carta */
+  .letter{max-width:520px;width:100%;background:rgba(255,251,238,.88);border:1px solid var(--line);border-radius:6px;padding:28px 24px;text-align:left;
+    box-shadow:0 10px 40px rgba(120,70,0,.25);border-top:3px solid var(--sun);margin-top:10px}
+  .letter{display:none;animation:paperIn 1s ease both;background:linear-gradient(rgba(255,251,238,.94),rgba(255,247,226,.94))}
+  .letter.show{display:block}
+  @keyframes paperIn{from{opacity:0;transform:translateY(40px) scale(.96)}to{opacity:1;transform:none}}
+  .letter p{margin-bottom:.9em;font-family:'Great Vibes','Brush Script MT',cursive;font-size:clamp(1.7rem,6.4vw,2.1rem);line-height:1.25;color:#3a1c00}
+  .letter p .es{font-size:.5em;line-height:1.3;opacity:0;transition:opacity 1.2s;color:#5a3a12}
+  .letter p .es.show{opacity:.85}
+  .caret{display:inline-block;width:2px;height:.9em;background:#8f5600;margin-left:2px;vertical-align:-.1em;animation:blink .8s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* sobre */
+  .envelope{width:min(320px,84vw);cursor:pointer;margin-top:10px;filter:drop-shadow(0 14px 22px rgba(90,50,0,.35));animation:float 4s ease-in-out infinite}
+  .envelope svg{width:100%;display:block;overflow:visible}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .envelope .cfl,.envelope .ofl,.envelope .pap,.envelope .seal{transition:transform .9s ease,opacity .6s ease .1s}
+  .envelope .cfl{transform-box:fill-box;transform-origin:50% 0%}
+  .envelope .ofl{opacity:0}
+  .envelope .pap{transition-delay:.55s;transition-duration:1s}
+  .envelope.open{animation:none}
+  .envelope.open .cfl{transform:scaleY(-1);opacity:0}
+  .envelope.open .seal{opacity:0;transform:scale(.4) translateY(-30px);transform-box:fill-box;transform-origin:center}
+  .envelope.open .ofl{opacity:1}
+  .envelope.open .pap{transform:translateY(-105px)}
+  .envelope.gone{transition:opacity .6s,transform .6s;opacity:0;transform:translateY(40px)}
+  #envHint{font-family:'Great Vibes','Brush Script MT',cursive;font-size:clamp(1.8rem,7vw,2.4rem);color:#3a1c00;margin-top:18px;text-shadow:0 0 12px rgba(255,248,225,.95);transition:opacity .5s}
+  #envHint .es{font-size:.45em}
+
+  /* reprodutor */
+  .player{margin-top:26px;display:flex;align-items:center;gap:14px;padding:12px 20px;
+    background:var(--card);border:1px solid var(--line);border-radius:50px;box-shadow:0 6px 24px rgba(120,70,0,.25);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  .play{width:46px;height:46px;border-radius:50%;border:none;background:var(--sun);color:#1a1400;font-size:1.2rem;cursor:pointer}
+  .player .t{text-align:left;font-family:'Great Vibes','Brush Script MT',cursive;font-size:1.7rem;line-height:1.1;color:#3a1c00}
+  .player .t small{display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;opacity:.8;font-size:.75rem;letter-spacing:.05em}
+  #petals{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:5}
+  .petal{position:absolute;top:-30px;line-height:0;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) translateX(var(--x)) rotate(360deg)}}
+
+  /* página con secciones */
+  #main{display:none;position:relative;z-index:1}
+  #main.show{display:block;animation:fade 1s ease}
+  .sec{max-width:1000px;margin:0 auto;padding:26px 16px 56px;text-align:center;scroll-margin-top:64px}
+  #jardim{min-height:calc(100vh - 70px);display:flex;flex-direction:column;align-items:center;justify-content:center}
+  #nav{position:sticky;top:10px;z-index:20;display:flex;gap:2px;width:max-content;max-width:calc(100% - 24px);margin:12px auto 0;padding:5px;
+    background:rgba(255,249,228,.8);border:1px solid var(--line);border-radius:40px;box-shadow:0 6px 22px rgba(120,70,0,.22);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  #nav a{padding:7px 16px;border-radius:30px;font-weight:600;font-size:1.15rem;letter-spacing:.03em;color:#3a1c00;text-decoration:none;transition:background .3s,color .3s}
+  #nav a.active{background:linear-gradient(180deg,#ffd75a,#e0a000);color:#1a1400}
+  #scrollHint{display:none;margin-top:12px;font-family:'Great Vibes','Brush Script MT',cursive;font-size:clamp(1.8rem,7vw,2.4rem);color:#5e0f22;cursor:pointer;
+    text-shadow:0 0 12px rgba(255,248,225,.95);animation:bob 1.8s ease-in-out infinite}
+  #scrollHint.show{display:block}
+  #scrollHint .es{font-size:.45em;color:#3a1c00}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+  .dash{display:grid;gap:18px;grid-template-columns:1fr;margin-top:18px;text-align:center}
+  @media (min-width:860px){ .dash{grid-template-columns:1fr 1fr;align-items:start} .map-card{grid-row:span 2} }
+  .card .ttl .es{display:block}
+  .clocks{display:flex;gap:10px;justify-content:center}
+  .clock{flex:1 1 0;min-width:0;max-width:150px}
+  .clock svg{width:100%;display:block;filter:drop-shadow(0 4px 8px rgba(90,50,0,.3))}
+  .clock .who{font-family:'Great Vibes','Brush Script MT',cursive;font-size:1.7rem;line-height:1.1;color:#3a1c00;margin-top:6px}
+  .clock .digital{font-weight:600;font-size:1.6rem;color:#8f5600;font-variant-numeric:tabular-nums;line-height:1.1}
+  .clock .part{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;opacity:.7}
+  #tzDiff{margin-top:12px;font-size:1.1rem;font-weight:500;font-style:italic;color:#4a2a08}
+  #tzDiff .es{font-size:.85em}
+  .map-card svg{width:100%;max-width:340px;display:block;margin:6px auto 0;overflow:visible}
+  .map-card .cap{margin-top:10px;font-size:1.1rem;font-style:italic;font-weight:500;color:#4a2a08}
+  #carta .letter{margin:10px auto 0}
+  #carta .envelope{margin-left:auto;margin-right:auto}
+
+  /* capas decorativas */
+  #sparks{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+  #critters{position:fixed;inset:0;pointer-events:none;z-index:4}
+  .critter{position:absolute;left:0;top:0;width:38px;will-change:transform}
+  .critter svg{width:100%;display:block;overflow:visible}
+  .critter .wl,.critter .wr{transform-box:fill-box;animation:flap .32s ease-in-out infinite alternate}
+  .critter .wl{transform-origin:100% 50%}.critter .wr{transform-origin:0% 50%}
+  .critter.bee{width:30px}
+  .critter.bee .wl,.critter.bee .wr{animation-duration:.07s}
+  .critter.rest .wl,.critter.rest .wr{animation-duration:1.4s}
+  @keyframes flap{from{transform:scaleX(1)}to{transform:scaleX(.25)}}
+  .bp,.sp{position:absolute;pointer-events:none;line-height:0;will-change:transform,opacity}
+  .fl.glow svg{animation:glow 1s ease-out}
+  @keyframes glow{0%{filter:drop-shadow(0 0 0 rgba(255,210,58,0))}30%{filter:drop-shadow(0 0 14px rgba(255,200,30,1)) drop-shadow(0 0 28px rgba(255,170,0,.8)) brightness(1.12)}100%{filter:drop-shadow(0 0 0 rgba(255,210,58,0))}}
+  .scene.leaving{animation:leave .5s ease forwards}
+  @keyframes leave{to{opacity:0;transform:scale(1.04)}}
+  #s0.opening .name,#s0.opening .intro,#s0.opening #open{opacity:0;transition:opacity .7s}
+  .bouquet.opening{animation:none;transform:scale(1.22);opacity:0;transition:transform 1.1s ease,opacity 1.1s ease .1s}
+  #audioMsg{font-size:.8rem;opacity:.7;margin-top:8px;min-height:1.2em}
+</style>
+</head>
+<body>
+<canvas id="sparks"></canvas>
+<div id="petals"></div>
+<div id="critters"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<radialGradient id="gCenter" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#7a4a1c"/><stop offset="1" stop-color="#3d2510"/></radialGradient>
+<linearGradient id="gYel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe066"/><stop offset="1" stop-color="#f6a800"/></linearGradient>
+<linearGradient id="gYel2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd23a"/><stop offset="1" stop-color="#e88f00"/></linearGradient>
+<linearGradient id="gWhite" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6b8"/><stop offset="1" stop-color="#ffd84a"/></linearGradient>
+<linearGradient id="gPink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe680"/><stop offset="1" stop-color="#f2b300"/></linearGradient>
+<linearGradient id="gTulip" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd84a"/><stop offset="1" stop-color="#e08a00"/></linearGradient>
+<linearGradient id="gLeaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8ac35a"/><stop offset="1" stop-color="#4a8a30"/></linearGradient>
+<linearGradient id="gPaper" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e8cc"/><stop offset="1" stop-color="#cfae74"/></linearGradient>
+<linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe27a"/><stop offset="1" stop-color="#c98d00"/></linearGradient>
+</defs></svg>
+
+<!-- 0. Início -->
+<section class="scene active" id="s0">
+  <div class="bouquet" data-bouquet></div>
+  <div class="name">Lanay</div>
+  <p class="intro"><span class="intro-small">o Nico preparou</span><span class="intro-script">algo especial</span><span class="intro-small">só para você</span></p>
+  <button class="btn" id="open">Abrir</button>
+</section>
+
+<main id="main">
+<nav id="nav" aria-label="secciones"><a href="#jardim" class="active">Jardim</a><a href="#nos">Nós</a><a href="#carta">Carta</a><a href="#musica">Música</a></nav>
+
+<!-- Jardim -->
+<section class="sec" id="jardim">
+  <div id="gardenMsg"></div>
+  <div id="garden" aria-label="jardim"></div>
+  <div id="hint">toque para fazer crescer uma flor<span class="es">toca para hacer crecer una flor</span></div>
+  <div id="scrollHint">tem mais aqui embaixo ↓<span class="es">hay más aquí abajo</span></div>
+</section>
+
+<!-- Nós: contador + relojes + mapa, todo a la vez -->
+<section class="sec" id="nos">
+  <h2>Nós dois<span class="es">Nosotros dos</span></h2>
+  <div class="dash">
+    <div class="card counter">
+      <div class="ttl">Desde a nossa primeira palavra 💛<span class="es">Desde nuestra primera palabra</span></div>
+      <div class="units">
+        <div class="unit"><b id="cM">0</b><span>meses</span></div>
+        <div class="unit"><b id="cD">0</b><span>dias</span></div>
+        <div class="unit"><b id="cH">0</b><span>horas</span></div>
+        <div class="unit"><b id="cMi">0</b><span>min</span></div>
+        <div class="unit"><b id="cS">0</b><span>seg</span></div>
+      </div>
+    </div>
+    <div class="card map-card">
+      <div class="ttl">Dois países, um mesmo céu, uma mesma lua<span class="es">Dos países, un mismo cielo, una misma luna</span></div>
+      <div id="map"></div>
+      <div class="cap">Colômbia <span style="color:#a3223a">·</span> Brasil</div>
+    </div>
+    <div class="card">
+      <div class="ttl">Agora mesmo<span class="es">Ahora mismo</span></div>
+      <div class="clocks" id="clocks"></div>
+      <div id="tzDiff"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Carta -->
+<section class="sec" id="carta">
+  <h2>Lanay, tenho algo a te dizer...<span class="es">Hay algo que quiero decirte...</span></h2>
+  <div class="envelope" id="envelope" aria-label="carta">
+    <svg viewBox="0 -120 300 330">
+      <defs>
+        <radialGradient id="gSeal" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#c8354f"/><stop offset="1" stop-color="#6d0f24"/></radialGradient>
+      </defs>
+      <rect x="0" y="0" width="300" height="200" rx="6" fill="#e6c98a"/>
+      <polygon class="ofl" points="0,0 300,0 150,-112" fill="#d8b56c" stroke="rgba(90,50,0,.3)"/>
+      <g class="pap">
+        <rect x="18" y="10" width="264" height="185" rx="3" fill="#fffaf0" stroke="rgba(90,50,0,.25)"/>
+        <g stroke="rgba(160,110,20,.35)" stroke-width="1.5" stroke-linecap="round"><path d="M50 50H250M50 72H230M50 94H250M50 116H210"/></g>
+      </g>
+      <polygon points="0,0 150,105 0,200" fill="#f0d99f" stroke="rgba(90,50,0,.2)"/>
+      <polygon points="300,0 150,105 300,200" fill="#ebd195" stroke="rgba(90,50,0,.2)"/>
+      <polygon points="0,200 150,98 300,200" fill="#f6e6bb" stroke="rgba(90,50,0,.2)"/>
+      <polygon class="cfl" points="0,0 300,0 150,118" fill="#f9ecc8" stroke="rgba(90,50,0,.3)"/>
+      <g class="seal"><circle cx="150" cy="112" r="20" fill="url(#gSeal)" stroke="rgba(60,10,20,.5)" stroke-width="1.2"/>
+        <circle cx="150" cy="112" r="14" fill="none" stroke="rgba(255,215,90,.55)" stroke-width="1"/>
+        <text x="150" y="121" text-anchor="middle" font-family="Great Vibes, cursive" font-size="26" fill="#ffd75a">L</text></g>
+    </svg>
+  </div>
+  <div id="envHint">toque para abrir<span class="es">toca para abrir</span></div>
+  <div class="letter" id="letter"></div>
+  <button class="btn" id="nextLine" style="display:none">Continuar ›</button>
+</section>
+
+<!-- Música -->
+<section class="sec" id="musica">
+  <div class="big-flower" data-flower="sunflower" style="margin:0 auto"></div>
+  <h2>Nossa música, Lanay<span class="es">Nuestra canción</span></h2>
+  <div class="player" style="display:inline-flex">
+    <button class="play" id="play" aria-label="Reproduzir">▶</button>
+    <div class="t">♪ Flores Amarillas<small id="songName">Floricienta · Nuestra canción</small></div>
+  </div>
+  <div id="audioMsg"></div>
+  <audio id="audio" src="assets/flores-amarillas.mp3" preload="none" loop></audio>
+</section>
+</main>
+
+<script>
+/* ============ CONFIGURA AQUÍ ============ */
+// Fecha de la primera palabra: viernes 18 septiembre 2026, 1:28 pm (hora Colombia, UTC-5)
+const START = new Date('2026-09-18T13:28:00-05:00');
+
+// Carta: [portugués, español]. Edítala a tu gusto.
+const LETTER = [
+  ["Não sabemos falar sem um tradutor...", "No sabemos hablar sin un traductor..."],
+  ["mas mesmo assim eu me divirto muito conversando com você.", "pero aun así me divierto muchísimo hablando contigo."],
+  ["Você faz meus dias mais leves, e cada mensagem sua me arranca um sorriso.", "Haces mis días más ligeros, y cada mensaje tuyo me saca una sonrisa."],
+  ["Acho que algumas coisas não precisam de tradução.", "Creo que algunas cosas no necesitan traducción."],
+  ["Obrigado por existir. 🌻", "Gracias por existir. 🌻"]
+];
+
+const GARDEN_MSG = ["Supongo que un solo ramo no era suficiente...",
+                    "Acho que um só buquê não era suficiente..."];
+/* ======================================== */
+
+const $ = id => document.getElementById(id);
+const rand = (a,b) => a + Math.random()*(b-a);
+const PETAL_COLS = ['#ffd23a','#ffe066','#ffcf3f','#fff0a0','#f2b300'];
+function petalSVG(sz){
+  const c = PETAL_COLS[Math.floor(Math.random()*PETAL_COLS.length)];
+  return '<svg width="'+sz+'" height="'+sz*1.5+'" viewBox="0 0 20 30"><path d="M10 1C18 10 17 24 10 29C3 24 2 10 10 1Z" fill="'+c+'" stroke="rgba(120,70,0,.3)" stroke-width=".8"/></svg>';
+}
+
+/* ---- entrada a la página ---- */
+let critterRun = false;
+function enterMain(){
+  const cur = $('s0'); cur.classList.add('leaving');
+  setTimeout(()=>{
+    cur.classList.remove('active','leaving'); cur.style.display='none';
+    $('main').classList.add('show'); window.scrollTo(0,0);
+    startCounter(); startClocks(); initNav(); drawMap();
+  }, 500);
+}
+
+/* ---- pétalos que salen disparados ---- */
+function burst(x, y, n){
+  for(let i=0;i<n;i++){
+    const el = document.createElement('span'); el.className='bp';
+    el.innerHTML = petalSVG(rand(12,26)); el.style.left=x+'px'; el.style.top=y+'px';
+    $('petals').appendChild(el);
+    const ang = rand(0,Math.PI*2), dist = rand(70,240), dx=Math.cos(ang)*dist, dy=Math.sin(ang)*dist*.8 - 60;
+    const rot = rand(-360,360);
+    el.animate([
+      {transform:'translate(0,0) rotate(0deg) scale(.3)',opacity:0},
+      {transform:'translate('+dx*.7+'px,'+dy*.7+'px) rotate('+rot*.4+'deg) scale(1)',opacity:1,offset:.25},
+      {transform:'translate('+dx*1.15+'px,'+(dy+rand(220,380))+'px) rotate('+rot+'deg) scale(.9)',opacity:0}
+    ],{duration:rand(1800,2800),easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish = () => el.remove();
+  }
+}
+function sparkle(x, y){
+  for(let i=0;i<9;i++){
+    const el = document.createElement('span'); el.className='sp';
+    const sz = rand(4,9);
+    el.innerHTML = '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 10 10"><path d="M5 0L6.3 3.7L10 5L6.3 6.3L5 10L3.7 6.3L0 5L3.7 3.7Z" fill="#ffe27a" stroke="#e0a000" stroke-width=".5"/></svg>';
+    el.style.left=x+'px'; el.style.top=y+'px'; $('petals').appendChild(el);
+    const ang = rand(0,Math.PI*2), d = rand(20,55);
+    el.animate([{transform:'translate(-50%,-50%) scale(.2)',opacity:1},
+                {transform:'translate(calc(-50% + '+Math.cos(ang)*d+'px),calc(-50% + '+Math.sin(ang)*d+'px)) scale(1.2)',opacity:.9,offset:.5},
+                {transform:'translate(calc(-50% + '+Math.cos(ang)*d*1.3+'px),calc(-50% + '+(Math.sin(ang)*d*1.3+14)+'px)) scale(0)',opacity:0}],
+               {duration:rand(600,950),easing:'ease-out'}).onfinish = () => el.remove();
+  }
+}
+
+$('open').onclick = () => {
+  const b = document.querySelector('.bouquet'), rc = b.getBoundingClientRect();
+  $('open').disabled = true;
+  $('s0').classList.add('opening'); b.classList.add('opening');
+  burst(rc.left+rc.width/2, rc.top+rc.height*.35, 46);
+  setTimeout(enterMain, 1150);
+};
+
+/* ---- luciérnagas / polvo de luz de fondo ---- */
+(function(){
+  const cv = $('sparks'), ctx = cv.getContext('2d'); let W=0,H=0,P=[];
+  function size(){
+    const d = window.devicePixelRatio||1; W=innerWidth; H=innerHeight;
+    cv.width=W*d; cv.height=H*d; ctx.setTransform(d,0,0,d,0,0);
+    const n = Math.min(60, Math.round(W*H/16000));
+    P = Array.from({length:n},()=>({x:rand(0,W),y:rand(0,H),r:rand(1.2,3.2),vx:rand(-.12,.12),vy:rand(-.28,-.05),ph:rand(0,6.28),sp:rand(.6,1.8)}));
+  }
+  size(); addEventListener('resize',size);
+  (function frame(t){
+    ctx.clearRect(0,0,W,H);
+    for(const p of P){
+      p.x += p.vx + Math.sin(t/1400*p.sp+p.ph)*.25; p.y += p.vy;
+      if(p.y < -10){ p.y = H+10; p.x = rand(0,W); }
+      if(p.x < -10) p.x = W+10; if(p.x > W+10) p.x = -10;
+      const a = .35 + .65*Math.abs(Math.sin(t/1000*p.sp+p.ph)), R = p.r*6;
+      const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,R);
+      g.addColorStop(0,'rgba(255,250,210,'+a+')'); g.addColorStop(.25,'rgba(255,205,60,'+a*.65+')'); g.addColorStop(1,'rgba(255,170,0,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x,p.y,R,0,6.283); ctx.fill();
+    }
+    requestAnimationFrame(frame);
+  })(performance.now());
+})();
+
+/* ---- mariposas y abejas ---- */
+const BUTTERFLY = '<svg viewBox="0 0 40 34"><g class="wl"><path d="M20 16C12 2 2 2 3 12C4 20 12 20 20 18Z" fill="#ff8a3d" stroke="#7a2b00" stroke-width="1"/><path d="M20 19C12 22 6 30 12 32C17 33 20 26 20 19Z" fill="#ffb066" stroke="#7a2b00" stroke-width="1"/><circle cx="9" cy="11" r="2" fill="#fff"/></g>'+
+  '<g class="wr"><path d="M20 16C28 2 38 2 37 12C36 20 28 20 20 18Z" fill="#ff8a3d" stroke="#7a2b00" stroke-width="1"/><path d="M20 19C28 22 34 30 28 32C23 33 20 26 20 19Z" fill="#ffb066" stroke="#7a2b00" stroke-width="1"/><circle cx="31" cy="11" r="2" fill="#fff"/></g>'+
+  '<ellipse cx="20" cy="18" rx="2" ry="9" fill="#3a1c00"/><path d="M19 10C16 5 14 4 13 3M21 10C24 5 26 4 27 3" stroke="#3a1c00" stroke-width=".9" fill="none"/></svg>';
+const BEE = '<svg viewBox="0 0 40 30"><g class="wl"><ellipse cx="15" cy="7" rx="8" ry="5" fill="rgba(255,255,255,.75)" stroke="rgba(120,140,160,.6)" stroke-width=".6" transform="rotate(-20 15 7)"/></g>'+
+  '<g class="wr"><ellipse cx="25" cy="7" rx="8" ry="5" fill="rgba(255,255,255,.75)" stroke="rgba(120,140,160,.6)" stroke-width=".6" transform="rotate(20 25 7)"/></g>'+
+  '<ellipse cx="20" cy="18" rx="11" ry="8" fill="#ffc81a" stroke="#3a1c00" stroke-width="1"/><path d="M15 11V25M20 10V26M25 11V25" stroke="#3a1c00" stroke-width="2.6"/>'+
+  '<circle cx="8" cy="18" r="4" fill="#3a1c00"/><path d="M31 18L36 18" stroke="#3a1c00" stroke-width="2" stroke-linecap="round"/></svg>';
+const critters = [];
+function flowerSpot(){
+  const fl = [...document.querySelectorAll('#garden .fl')].filter(f=>{ const q=f.getBoundingClientRect(); return q.top>40 && q.bottom<innerHeight && q.width>0; });
+  if(fl.length && Math.random() < .85){
+    const r = fl[Math.floor(Math.random()*fl.length)].getBoundingClientRect();
+    return {x:r.left+r.width/2 + rand(-6,6), y:r.top+r.height*.3 + rand(-6,6)};
+  }
+  return {x:rand(30,innerWidth-30), y:rand(80,innerHeight*.75)};
+}
+function startCritters(){
+  if(critterRun) return; critterRun = true; $('critters').style.display='block';
+  [['bf',BUTTERFLY,60],['bf',BUTTERFLY,50],['bf',BUTTERFLY,70],['bee',BEE,105],['bee',BEE,120]].forEach((c,i)=>{
+    setTimeout(()=>{
+      if(!critterRun) return;
+      const el = document.createElement('div'); el.className='critter '+(c[0]==='bee'?'bee':''); el.innerHTML = c[1];
+      $('critters').appendChild(el);
+      const fromLeft = Math.random()<.5;
+      critters.push({el, kind:c[0], speed:c[2], x:fromLeft?-50:innerWidth+50, y:rand(40,innerHeight*.5), ph:rand(0,6), wait:0, flip:1, t:flowerSpot()});
+    }, i*700);
+  });
+  let last = performance.now();
+  (function loop(now){
+    if(!critterRun) return;
+    const dt = Math.min(.05,(now-last)/1000); last = now;
+    for(const c of critters){
+      if(c.wait > 0){ c.wait -= dt; if(c.wait <= 0){ c.el.classList.remove('rest'); c.t = flowerSpot(); } }
+      else{
+        const dx=c.t.x-c.x, dy=c.t.y-c.y, d=Math.hypot(dx,dy);
+        if(d < 5){ c.wait = rand(1.5,3.5); c.el.classList.add('rest'); }
+        else { const v = c.speed*Math.min(1,d/60+.25)*dt; c.x += dx/d*v; c.y += dy/d*v; if(Math.abs(dx)>4) c.flip = dx<0 ? -1 : 1; }
+      }
+      const moving = c.wait <= 0, bee = c.kind==='bee';
+      const wob = moving ? Math.sin(now/(bee?90:260)+c.ph)*(bee?3:9) : 0;
+      const bob = moving ? Math.cos(now/(bee?70:200)+c.ph)*(bee?3:7) : 0;
+      c.el.style.transform = 'translate('+(c.x-19+wob)+'px,'+(c.y-16+bob)+'px) scaleX('+c.flip+') rotate('+(moving?Math.sin(now/300+c.ph)*8:0)+'deg)';
+    }
+    requestAnimationFrame(loop);
+  })(last);
+}
+function stopCritters(){ critterRun=false; critters.length=0; $('critters').innerHTML=''; $('critters').style.display='none'; }
+
+/* ---- Flores dibujadas en SVG ---- */
+function petals(n, cy, rx, ry, fill, off){
+  let o='';
+  for(let i=0;i<n;i++){
+    o+='<ellipse cx="50" cy="'+cy+'" rx="'+rx+'" ry="'+ry+'" fill="'+fill+'" stroke="rgba(120,60,0,.18)" stroke-width=".6" transform="rotate('+(i*360/n+off)+' 50 50)"/>';
+  }
+  return o;
+}
+function seeds(){
+  let o='';
+  for(let i=1;i<34;i++){
+    const r=Math.sqrt(i)*2.3, a=i*137.508*Math.PI/180;
+    o+='<circle cx="'+(50+r*Math.cos(a)).toFixed(1)+'" cy="'+(50+r*Math.sin(a)).toFixed(1)+'" r="1" fill="#e0a23c" opacity=".55"/>';
+  }
+  return o;
+}
+const STEM='<path d="M50 62C50 100 45 130 50 158" fill="none" stroke="#4a8a30" stroke-width="4.5" stroke-linecap="round"/>'+
+  '<path d="M48 120C30 118 20 104 18 96C34 96 46 106 48 120Z" fill="url(#gLeaf)"/>'+
+  '<path d="M49 138C66 138 78 124 80 114C64 114 51 124 49 138Z" fill="url(#gLeaf)"/>';
+function headOf(type){
+  if(type==='sunflower') return petals(16,24,7.5,22,'url(#gYel2)',0)+petals(16,26,7,20,'url(#gYel)',11.25)+
+      '<circle cx="50" cy="50" r="15" fill="url(#gCenter)"/>'+seeds();
+  if(type==='daisy') return petals(14,26,5.5,22,'url(#gWhite)',0)+'<circle cx="50" cy="50" r="9" fill="#c77a00"/><circle cx="47" cy="47" r="3" fill="#f0a830" opacity=".8"/>';
+  if(type==='cosmos') return petals(8,27,12,20,'url(#gPink)',0)+'<circle cx="50" cy="50" r="7" fill="#b06a10"/><circle cx="50" cy="50" r="3" fill="#6b3d0a"/>';
+  if(type==='tulip') return '<path d="M32 30C32 52 38 68 50 68C62 68 68 52 68 30L60 40L50 22L40 40Z" fill="url(#gTulip)" stroke="rgba(130,80,0,.3)" stroke-width=".8"/>'+
+         '<path d="M50 22C44 34 42 52 50 68C58 52 56 34 50 22Z" fill="#fff0a0" opacity=".5"/>';
+  return '';
+}
+function flowerSVG(type){
+  if(type==='sprout'){
+    return '<svg viewBox="0 0 100 160"><path d="M50 158C50 140 50 128 50 118" stroke="#4a8a30" stroke-width="4.5" fill="none" stroke-linecap="round"/>'+
+      '<path d="M50 122C34 122 24 112 22 102C38 102 48 110 50 122Z" fill="url(#gLeaf)"/><path d="M50 118C64 118 74 108 76 98C62 98 52 106 50 118Z" fill="url(#gLeaf)"/></svg>';
+  }
+  return '<svg viewBox="0 0 100 160">'+STEM+headOf(type)+'</svg>';
+}
+function bouquetSVG(){
+  const F=[ // tipo, x, y, escala, rotación (de atrás hacia adelante)
+    ['tulip',62,125,.72,-28],['tulip',238,125,.72,28],
+    ['daisy',108,58,.62,-8],['cosmos',196,62,.68,10],['daisy',150,150,.5,0],
+    ['sunflower',82,158,.78,-14],['sunflower',218,158,.78,14],
+    ['cosmos',40,192,.5,-20],['cosmos',260,192,.5,20],
+    ['sunflower',150,108,.95,0],['cosmos',150,190,.55,0]
+  ];
+  let o='<svg viewBox="0 0 300 345">';
+  // hojas de fondo
+  [-75,-52,-28,28,52,75].forEach(a=>{ o+='<path d="M0 0C-16 -22 -12 -58 0 -84C12 -58 16 -22 0 0Z" fill="url(#gLeaf)" stroke="rgba(0,0,0,.2)" stroke-width=".6" transform="translate(150 232) rotate('+a+') scale(1.15)"/>'; });
+  // tallos
+  F.forEach(f=>{ o+='<path d="M150 262Q'+((150+f[1])/2)+' '+(f[2]+95)+' '+f[1]+' '+f[2]+'" fill="none" stroke="#4a8a30" stroke-width="4" stroke-linecap="round"/>'; });
+  // gypsophila (florecitas blancas)
+  [[40,140],[262,140],[100,25],[205,28],[22,175],[280,172],[125,215],[178,214],[60,95],[240,92],[150,30],[128,45],[175,50]].forEach(c=>{
+    o+='<g fill="#fff3b0" opacity=".95"><circle cx="'+c[0]+'" cy="'+c[1]+'" r="3.2"/><circle cx="'+(c[0]+6)+'" cy="'+(c[1]+3)+'" r="2.4"/><circle cx="'+(c[0]-5)+'" cy="'+(c[1]+4)+'" r="2.2"/></g>';
+  });
+  // cabezas
+  F.forEach(f=>{ o+='<g transform="translate('+f[1]+' '+f[2]+') rotate('+f[4]+') scale('+f[3]+') translate(-50 -50)">'+headOf(f[0])+'</g>'; });
+  // papel de envolver
+  o+='<path d="M52 208Q150 246 248 208L176 336Q150 344 124 336Z" fill="url(#gPaper)" stroke="rgba(0,0,0,.25)" stroke-width="1"/>'+
+     '<path d="M52 208Q150 246 248 208L206 262Q150 282 94 262Z" fill="#fff" opacity=".12"/>'+
+     '<path d="M150 246L150 340M104 232L136 338M196 232L164 338" stroke="rgba(120,80,20,.25)" stroke-width="1" fill="none"/>';
+  // listón y moño (capa superior)
+  o+='<path d="M96 264Q150 286 204 264L199 280Q150 302 101 280Z" fill="#b87800" stroke="rgba(60,35,0,.5)" stroke-width="1"/>'+
+     '<g style="filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))">'+
+     '<path d="M150 288L128 340L142 332L150 344Z" fill="#c98d00" stroke="rgba(60,35,0,.5)" stroke-width="1"/>'+
+     '<path d="M150 288L172 340L158 332L150 344Z" fill="#dda100" stroke="rgba(60,35,0,.5)" stroke-width="1"/>'+
+     '<path d="M150 284C128 250 88 262 98 292C106 314 138 298 150 284Z" fill="url(#gGold)" stroke="rgba(60,35,0,.55)" stroke-width="1.2"/>'+
+     '<path d="M150 284C172 250 212 262 202 292C194 314 162 298 150 284Z" fill="url(#gGold)" stroke="rgba(60,35,0,.55)" stroke-width="1.2"/>'+
+     '<path d="M146 284C132 268 114 270 110 284M154 284C168 268 186 270 190 284" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2" stroke-linecap="round"/>'+
+     '<ellipse cx="150" cy="285" rx="10" ry="9" fill="#ffd75a" stroke="rgba(60,35,0,.55)" stroke-width="1.2"/></g>';
+  return o+'</svg>';
+}
+document.querySelectorAll('[data-flower]').forEach(e=>e.innerHTML=flowerSVG(e.dataset.flower));
+document.querySelectorAll('[data-bouquet]').forEach(e=>e.innerHTML=bouquetSVG());
+
+/* ---- Jardín ---- */
+const FLOWERS = ['sunflower','sunflower','daisy','tulip','sunflower','cosmos','sunflower','daisy','sunflower','cosmos'];
+let count = 0, done = false;
+const garden = $('garden');
+garden.onclick = (e) => {
+  sparkle(e.clientX, e.clientY);
+  if(done){
+    const f = e.target.closest('.fl');
+    if(f){ f.classList.remove('glow'); void f.offsetWidth; f.classList.add('glow'); }
+    return;
+  }
+  count++;
+  const idx = count;
+  const el = document.createElement('span');
+  el.className = 'fl';
+  el.innerHTML = flowerSVG('sprout');
+  garden.appendChild(el);
+  setTimeout(()=>{ el.innerHTML = flowerSVG(FLOWERS[idx % FLOWERS.length]); }, 450);
+  $('hint').style.opacity = 0;
+  if(count >= 7){
+    done = true;
+    setTimeout(()=>{
+      garden.querySelectorAll('.fl').forEach((f,i)=>{ f.style.setProperty('--d', (i*0.4)+'s'); f.classList.add('grown'); });
+      // más flores para llenar el jardín
+      for(let i=0;i<9;i++){
+        setTimeout(()=>{
+          const f=document.createElement('span'); f.className='fl grown';
+          f.innerHTML=flowerSVG(FLOWERS[(i+3)%FLOWERS.length]); f.style.setProperty('--d',(i*0.3)+'s');
+          const k=0.7+Math.random()*0.5; f.style.width=(64*k)+'px'; f.style.height=(102*k)+'px'; garden.appendChild(f);
+        }, i*180);
+      }
+      $('gardenMsg').innerHTML = GARDEN_MSG[1] + '<span class="es">'+GARDEN_MSG[0]+'</span>';
+      setTimeout(()=>$('scrollHint').classList.add('show'), 2200);
+      setTimeout(startCritters, 1600);
+    }, 900);
+  }
+};
+
+/* ---- Contador ---- */
+function startCounter(){
+  const tick = () => {
+    const now = new Date();
+    if(now < START){ ['cM','cD','cH','cMi','cS'].forEach(i=>$(i).textContent=0); return; }
+    // meses de calendario completos
+    let months = (now.getFullYear()-START.getFullYear())*12 + (now.getMonth()-START.getMonth());
+    let anchor = new Date(START); anchor.setMonth(START.getMonth()+months);
+    if(anchor > now){ months--; anchor = new Date(START); anchor.setMonth(START.getMonth()+months); }
+    let diff = Math.floor((now-anchor)/1000);
+    const d = Math.floor(diff/86400); diff%=86400;
+    const h = Math.floor(diff/3600); diff%=3600;
+    const m = Math.floor(diff/60), s = diff%60;
+    $('cM').textContent=months; $('cD').textContent=d; $('cH').textContent=h;
+    $('cMi').textContent=m; $('cS').textContent=s;
+  };
+  tick(); setInterval(tick,1000);
+}
+
+/* ---- Carta ---- */
+let li = 0, typing = false, opened = false;
+$('envelope').onclick = () => {
+  if(opened) return; opened = true;
+  $('envelope').classList.add('open'); $('envHint').style.opacity = 0;
+  const rc = $('envelope').getBoundingClientRect(); burst(rc.left+rc.width/2, rc.top+rc.height*.4, 16);
+  setTimeout(()=>{ $('envelope').classList.add('gone'); }, 1900);
+  setTimeout(()=>{ $('envelope').style.display='none'; $('envHint').style.display='none'; $('letter').classList.add('show'); setTimeout(typeLine, 900); }, 2500);
+};
+function typeLine(){
+  if(typing || li >= LETTER.length) return;
+  typing = true; $('nextLine').style.display = 'none';
+  const chars = Array.from(LETTER[li][0]), p = document.createElement('p');
+  const txt = document.createElement('span'), caret = document.createElement('span'), es = document.createElement('span');
+  caret.className = 'caret'; es.className = 'es'; es.textContent = LETTER[li][1];
+  p.append(txt, caret, es); $('letter').appendChild(p);
+  p.scrollIntoView({behavior:'smooth',block:'center'});
+  let i = 0;
+  const timer = setInterval(()=>{
+    txt.textContent = chars.slice(0, ++i).join('');
+    if(i >= chars.length){
+      clearInterval(timer); caret.remove(); es.classList.add('show'); li++; typing = false;
+      setTimeout(()=>{ if(li < LETTER.length) $('nextLine').style.display='inline-block'; }, 700);
+    }
+  }, 55);
+}
+$('nextLine').onclick = typeLine;
+$('scrollHint').onclick = () => $('nos').scrollIntoView();
+
+/* ---- navegación entre secciones ---- */
+function initNav(){
+  const links = [...document.querySelectorAll('#nav a')];
+  const io = new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting) links.forEach(a=>a.classList.toggle('active', a.getAttribute('href')==='#'+e.target.id)); });
+  },{rootMargin:'-45% 0px -50% 0px'});
+  ['jardim','nos','carta','musica'].forEach(id=>io.observe($(id)));
+}
+
+/* ---- relojes: ella (Brasil) y él (Colombia) ---- */
+const TZ_NICO = 'America/Bogota', TZ_LANAY = 'America/Sao_Paulo';
+function clockHTML(id, who){
+  let ticks='';
+  for(let i=0;i<12;i++) ticks+='<line x1="50" y1="9" x2="50" y2="'+(i%3===0?16:13)+'" stroke="#a86f00" stroke-width="'+(i%3===0?2.4:1.4)+'" stroke-linecap="round" transform="rotate('+i*30+' 50 50)"/>';
+  return '<div class="clock" id="'+id+'"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="47" fill="#ffe9a8" class="face" stroke="#d99500" stroke-width="3"/>'+ticks+
+    '<line class="hh" x1="50" y1="50" x2="50" y2="29" stroke="#3a1c00" stroke-width="4" stroke-linecap="round"/>'+
+    '<line class="mh" x1="50" y1="50" x2="50" y2="19" stroke="#3a1c00" stroke-width="2.8" stroke-linecap="round"/>'+
+    '<line class="sh" x1="50" y1="56" x2="50" y2="15" stroke="#a3223a" stroke-width="1.2" stroke-linecap="round"/>'+
+    '<circle cx="50" cy="50" r="3.2" fill="#a3223a"/></svg>'+
+    '<div class="who">'+who+'</div><div class="digital">--:--</div><div class="part"></div></div>';
+}
+function tzTime(tz){
+  const f = new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  const o = {}; f.formatToParts(new Date()).forEach(p=>{ o[p.type]=p.value; });
+  return {h:(+o.hour)%24, m:+o.minute, s:+o.second};
+}
+function startClocks(){
+  $('clocks').innerHTML = clockHTML('clNico','Nico') + clockHTML('clLanay','Lanay');
+  const upd = () => {
+    [['clNico',TZ_NICO],['clLanay',TZ_LANAY]].forEach(([id,tz])=>{
+      const t = tzTime(tz), el = $(id), night = t.h<6 || t.h>=18;
+      el.querySelector('.hh').setAttribute('transform','rotate('+((t.h%12)*30+t.m*.5)+' 50 50)');
+      el.querySelector('.mh').setAttribute('transform','rotate('+(t.m*6+t.s*.1)+' 50 50)');
+      el.querySelector('.sh').setAttribute('transform','rotate('+t.s*6+' 50 50)');
+      el.querySelector('.face').setAttribute('fill', night ? '#5e0f22' : '#ffe9a8');
+      el.querySelector('.sh').setAttribute('stroke', night ? '#ffd75a' : '#a3223a');
+      el.querySelectorAll('line').forEach(l=>{ if(!l.classList.contains('sh') && l.getAttribute('stroke')==='#3a1c00') l.setAttribute('stroke', night ? '#ffe9a8' : '#3a1c00'); });
+      el.querySelector('.digital').textContent = String(t.h).padStart(2,'0')+':'+String(t.m).padStart(2,'0')+':'+String(t.s).padStart(2,'0');
+      el.querySelector('.part').textContent = t.h<6 ? 'madrugada' : t.h<12 ? 'manhã' : t.h<18 ? 'tarde' : 'noite';
+    });
+    const a = new Date(new Date().toLocaleString('en-US',{timeZone:TZ_LANAY})), b = new Date(new Date().toLocaleString('en-US',{timeZone:TZ_NICO}));
+    const d = Math.round((a-b)/3600000);
+    $('tzDiff').innerHTML = d===0 ? 'Mesma hora aqui e lá<span class="es">La misma hora aquí y allá</span>' :
+      (d>0 ? 'Lanay está '+d+' hora'+(d>1?'s':'')+' à frente' : 'Nico está '+(-d)+' hora'+(d<-1?'s':'')+' à frente')+
+      '<span class="es">'+(d>0 ? 'Lanay va '+d+' hora'+(d>1?'s':'')+' adelante' : 'Nico va '+(-d)+' hora'+(d<-1?'s':'')+' adelante')+'</span>';
+  };
+  upd(); setInterval(upd,1000);
+}
+
+/* ---- mapa Colombia ↔ Brasil ---- */
+// [lon, lat, nombre]. Cámbialo si quieres poner una ciudad concreta.
+const PLACE_NICO = [-74.1, 4.7], PLACE_LANAY = [-51.5, -11.5];
+const MAP_SA = [[-77.4,8.6],[-75.6,10.7],[-74.2,11.3],[-72.4,12.4],[-71.3,11.8],[-70,12.2],[-68,10.6],[-64,10.6],[-61.5,10.7],[-60,8.5],[-57,6],[-53,5.5],[-51.6,4.3],[-50,1.7],[-49.8,0],[-48.5,-1],[-44.5,-2.4],[-41,-2.9],[-38.5,-3.8],[-35.2,-5.4],[-34.9,-7.5],[-35.5,-9.5],[-37.3,-11.5],[-38.5,-13],[-39,-17],[-39.7,-18.5],[-40.9,-21.5],[-41.9,-22.9],[-44.5,-23.3],[-46.5,-24],[-48.6,-26],[-48.6,-28.5],[-50.5,-30.5],[-52.1,-32.4],[-53.4,-33.7],[-56,-34.9],[-58.5,-34.6],[-57.5,-36.5],[-57,-38],[-62,-39],[-64.5,-40.8],[-65,-42.5],[-67.5,-46],[-66,-47.8],[-68.5,-50],[-69,-52.5],[-68.5,-54.8],[-72,-54],[-74.5,-51],[-75.5,-47],[-73.5,-42],[-73.4,-37],[-71.5,-32],[-70.6,-27],[-70.3,-18.5],[-71.5,-17.5],[-76,-14],[-78.5,-10],[-81.2,-6],[-80.5,-3.5],[-80,-1],[-80,0.8],[-78.8,1.5],[-77.9,2.7],[-77.4,4],[-77.4,6.5],[-77.9,7.2]];
+const MAP_CO = [[-77.35,8.67],[-76.2,9.4],[-75.6,10.7],[-74.2,11.3],[-72.4,12.4],[-71.3,11.8],[-72,10.5],[-72.6,9],[-71.6,7],[-70.1,6.9],[-67.8,6.2],[-67.5,2.8],[-67.3,1.7],[-69.9,1.1],[-70,-0.2],[-69.5,-1.2],[-69.9,-4.2],[-70.7,-3.6],[-73.2,-2.3],[-75.3,-0.1],[-77,0.4],[-78.9,1.4],[-77.9,2.7],[-77.4,4],[-77.4,6.5],[-77.9,7.2]];
+const MAP_BR = [[-60,5.2],[-60.7,5.2],[-61.4,4.4],[-64,4.1],[-64.7,2.2],[-67.3,1.7],[-69.9,1.1],[-70,-0.2],[-69.5,-1.2],[-69.9,-4.2],[-72.9,-5],[-73.9,-7.4],[-72.5,-9.5],[-70.5,-11],[-68.5,-11.2],[-65.4,-10.4],[-63.5,-12.2],[-60.5,-13.8],[-60,-16.3],[-57.8,-17.5],[-58.1,-20.2],[-57.9,-22],[-55.5,-22.5],[-54.3,-24],[-54.6,-25.5],[-53.7,-25.6],[-54,-27.2],[-56,-28.2],[-57.6,-30.2],[-55.5,-30.9],[-53.5,-32.3],[-53.4,-33.7],[-52.1,-32.4],[-50.5,-30.5],[-48.6,-28.5],[-48.6,-26],[-46.5,-24],[-44.5,-23.3],[-41.9,-22.9],[-40.9,-21.5],[-39.7,-18.5],[-39,-17],[-38.5,-13],[-37.3,-11.5],[-35.5,-9.5],[-34.9,-7.5],[-35.2,-5.4],[-38.5,-3.8],[-41,-2.9],[-44.5,-2.4],[-48.5,-1],[-49.8,0],[-50,1.7],[-51.6,4.3],[-53,5.5],[-57,6],[-60,5.2]];
+function drawMap(){
+  const K = 6.2, X = lon => (lon+82)*K, Y = lat => (13-lat)*K;
+  const pts = a => a.map(q=>X(q[0]).toFixed(1)+','+Y(q[1]).toFixed(1)).join(' ');
+  const A = [X(PLACE_NICO[0]),Y(PLACE_NICO[1])], B = [X(PLACE_LANAY[0]),Y(PLACE_LANAY[1])];
+  const C = [(A[0]+B[0])/2 - 10, Math.min(A[1],B[1]) - 70];
+  const path = 'M'+A[0].toFixed(1)+' '+A[1].toFixed(1)+' Q'+C[0].toFixed(1)+' '+C[1].toFixed(1)+' '+B[0].toFixed(1)+' '+B[1].toFixed(1);
+  const pin = (p,name,dx,dy) => '<g transform="translate('+p[0].toFixed(1)+' '+p[1].toFixed(1)+')">'+
+    '<circle r="11" fill="rgba(163,34,58,.25)"><animate attributeName="r" values="7;15;7" dur="2.6s" repeatCount="indefinite"/><animate attributeName="opacity" values=".9;0;.9" dur="2.6s" repeatCount="indefinite"/></circle>'+
+    '<circle r="6" fill="#a3223a" stroke="#fff8e1" stroke-width="2"/>'+
+    '<text x="'+dx+'" y="'+dy+'" text-anchor="middle" font-family="Great Vibes, cursive" font-size="27" fill="#3a1c00" stroke="rgba(255,248,225,.95)" stroke-width="4" paint-order="stroke">'+name+'</text></g>';
+  $('map').innerHTML = '<svg viewBox="0 0 300 432">'+
+    '<polygon points="'+pts(MAP_SA)+'" fill="#efe2bf" stroke="#c9a961" stroke-width="1.2" stroke-linejoin="round"/>'+
+    '<polygon points="'+pts(MAP_BR)+'" fill="#8cc063" stroke="#4a7a2c" stroke-width="1.4" stroke-linejoin="round"/>'+
+    '<polygon points="'+pts(MAP_CO)+'" fill="#ffd23a" stroke="#b07a00" stroke-width="1.4" stroke-linejoin="round"/>'+
+    '<path d="'+path+'" fill="none" stroke="#a3223a" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="1 7"><animate attributeName="stroke-dashoffset" from="0" to="-32" dur="2.4s" repeatCount="indefinite"/></path>'+
+    '<g><animateMotion dur="8s" repeatCount="indefinite" path="'+path+'" keyPoints="0;1;0" keyTimes="0;.5;1" calcMode="linear"/><g transform="scale(.3) translate(-50 -50)">'+headOf('sunflower')+'</g></g>'+
+    pin(A,'Nico',-4,-16)+pin(B,'Lanay',0,-16)+'</svg>';
+}
+
+/* ---- Música + pétalos ---- */
+const audio = $('audio'); let petalTimer = null;
+function spawnPetal(){
+  const p = document.createElement('span'); p.className='petal';
+  p.innerHTML = petalSVG(12+Math.random()*14);
+  p.style.left = Math.random()*100+'vw';
+  p.style.setProperty('--x', (Math.random()*160-80)+'px');
+  p.style.animationDuration = (6+Math.random()*6)+'s';
+  $('petals').appendChild(p); setTimeout(()=>p.remove(),12500);
+}
+function setPlaying(on){
+  $('play').textContent = on ? '❚❚' : '▶';
+  clearInterval(petalTimer);
+  if(on) petalTimer = setInterval(spawnPetal, 350);
+}
+$('play').onclick = () => {
+  if(audio.paused){
+    audio.play().then(()=>setPlaying(true)).catch(()=>{
+      $('audioMsg').textContent = 'Falta o arquivo assets/flores-amarillas.mp3 / Falta el archivo assets/flores-amarillas.mp3';
+      setPlaying(true); // igual muestra pétalos
+    });
+  } else { audio.pause(); setPlaying(false); }
+};
+</script>
+</body>
+</html>
